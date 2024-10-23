@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Letter Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCoverLetterData();
+
+            document.getElementById('editButton').addEventListener('click', toggleEditMode);
+            document.getElementById('pdfButton').addEventListener('click', generatePDF);
+            document.getElementById('editForm').addEventListener('submit', saveCoverLetterData);
+    
+        });
+
+        function toggleEditMode() {
+            const form = document.getElementById('editForm');
+            const displaySection = document.getElementById('displaySection');
+            const editButton = document.getElementById('editButton');
+            const pdfButton = document.getElementById('pdfButton');
+
+            if (form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                displaySection.classList.add('hidden');
+                editButton.textContent = 'Cancel Edit';
+                pdfButton.classList.add('hidden');
+            } else {
+                form.classList.add('hidden');
+                displaySection.classList.remove('hidden');
+                editButton.textContent = 'Edit Cover Letter';
+                pdfButton.classList.remove('hidden');
+            }
+        }
+
+        function loadCoverLetterData() {
+            const data = JSON.parse(localStorage.getItem('coverLetterData')) || {
+                name: "Sheung Kit, Simon Chan",
+                address: "Yonge–Eglinton, Toronto, ON M4P 0E3",
+                email: "chansk3693@gmail.com",
+                phone: "+1 (437) 838-4729",
+                date: new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }),
+                company: "",
+                location: "Toronto, ON",
+                position: ""
+            };
+
+            document.getElementById('name').value = data.name;
+            document.getElementById('address').value = data.address;
+            document.getElementById('email').value = data.email;
+            document.getElementById('phone').value = data.phone;
+            document.getElementById('date').value = data.date;
+            document.getElementById('company').value = data.company;
+            document.getElementById('location').value = data.location;
+            document.getElementById('position').value = data.position;
+            updateDisplaySection(data);
+        }
+
+        function saveCoverLetterData(event){
+            event.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            localStorage.setItem('coverLetterData', JSON.stringify(data));
+            updateDisplaySection(data);
+            toggleEditMode();
+        }
+
+        function updateDisplaySection(data) {
+            document.getElementById('displaySection').innerHTML = `
+                <p>${data.name}<br>
+                ${data.address}<br>
+                Email: <a href="mailto:${data.email}">${data.email}</a><br>
+                Cell: <a href="tel:+${data.phone}">${data.phone}</a></p>
+
+                <p>${data.date}</p>
+
+                <p>${data.company}<br>
+                ${data.location}</p>
+
+                <p>RE: ${data.position}</p>
+
+                <p>Dear Hiring Manager,</p>
+
+                <p>I am writing to express my interest in the ${data.position} position at ${data.company}. With a strong background in web/mobile development, IT business analysis, and hands-on experience in the full Software Development Life Cycle (SDLC), I am assured of my ability to contribute to your team and deliver innovative, high-quality mobile solutions.</p>
+
+                <p>As a postgraduate student in Mobile Application Development and Strategy at George Brown College, I have successfully designed, developed, and deployed numerous mobile applications, ensuring they are user-centric, responsive, and scalable. My experience includes proficiency in programming languages such as Swift, Kotlin, and JavaScript, as well as frameworks like React Native and SwiftUI. Additionally, my extensive experience with Agile/Scrum methodologies allows me to collaborate effectively within cross-functional teams to deliver projects on time and within scope.</p>
+
+                <p>In my previous role as an IT Business Analyst at Bank of China (Hong Kong), I played a key role in enhancing digital banking functionalities, which led to a 20% increase in user satisfaction. My ability to translate business needs into technical solutions, coupled with my strong analytical skills, enabled me to optimize mobile banking services, resulting in a 15% increase in adoption rates. I am confident that my technical expertise and commitment to excellence align with the goals of ${data.company}, and I am eager to bring my skills to your development team.</p>
+
+                <p>Thanks for your time and consideration. I'd love a chance to learn more about this position and demonstrate how I can help ${data.company} reach organizational goals. I believe my skills and motivation make me a great potential asset. I can be reached at <a href="tel:+${data.phone}">${data.phone}</a> or <a href="mailto:${data.email}">${data.email}</a> if you need any other information.</p>
+
+                <p>Sincerely,</p>
+                <p>${data.name}</p>
+            `;
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const content = document.getElementById('displaySection').innerText;
+
+            const margin = 20;
+            const pageWidth = doc.internal.pageSize.width;
+
+            doc.setFont('times', 'normal');
+            doc.setFontSize(12);
+
+            const lines = doc.splitTextToSize(content, pageWidth - 2 * margin);
+
+            doc.text(lines, margin, margin);
+            doc.save('cover-letter.pdf');
+        }
+
+    </script>
+</head>
+<body>
+    <button id="editButton" type="button">Edit Cover Letter</button>
+    <button id="pdfButton" type="button">Download PDF</button>
+
+    <!-- Edit Form -->
+    <form id="editForm" class="hidden content">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name"><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address"><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email"><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone"><br>
+
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date"><br>
+
+        <label for="company">Company:</label>
+        <input type="text" id="company" name="company"><br>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location"><br>
+
+        <label for="position">Position:</label>
+        <input type="text" id="position" name="position"><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <!-- Display Section -->
+    <section id="displaySection" class="content"></section>
+</body>
+</html>

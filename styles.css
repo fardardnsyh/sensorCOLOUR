@@ -1,0 +1,44 @@
+.hidden {
+    display: none;
+}
+
+button {
+    margin: 5px;
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+form, section {
+    margin-top: 20px;
+}
+
+form input {
+    margin-bottom: 10px;
+}
+
+form button {
+    background-color: #333;
+    color: #f4f4f4 
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #333;
+}
+
+.content {
+    padding: 30px;
+    flex: 1;
+    background-color: #f4f4f4; 
+    color: #333;
+    border-radius: 12px;
+}
+
+body a {
+
+}
